@@ -24,6 +24,10 @@ from utils.replay_engine import (
     ReplayEngine
 )
 
+from visualization.charts import (
+    MarketCharts
+)
+
 from config.thresholds import (
     MONITORED_STOCKS
 )
@@ -53,6 +57,16 @@ replay_engine = (
         replay_speed=0.15
     )
 )
+
+chart_engine = (
+    MarketCharts()
+)
+
+selected_chart_stock = (
+    "TSLA"
+)
+
+detected_events = []
 
 console.print(
     "\n[bold green]"
@@ -106,6 +120,8 @@ for stock in MONITORED_STOCKS:
         )
     )
 
+    stock_events = []
+
     for row in (
         replay_engine
         .stream_market_data(
@@ -133,3 +149,15 @@ for stock in MONITORED_STOCKS:
             alert_manager.process_alert(
                 smart_alert
             )
+
+            stock_events.append(
+                smart_alert
+            )
+
+    if stock == selected_chart_stock:
+
+        chart_engine.plot_market_analysis(
+            stock,
+            enriched_data,
+            stock_events
+        )
