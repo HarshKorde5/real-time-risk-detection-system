@@ -1,28 +1,55 @@
-def main():
-    from ingestion.data_loader import (
-        MarketDataLoader
-    )
+# main.py
 
-    from config.thresholds import (
-        MONITORED_STOCKS
-    )
+from ingestion.data_loader import (
+    MarketDataLoader
+)
 
-    loader = MarketDataLoader()
+from processing.indicators import (
+    IndicatorEngine
+)
 
-    for stock in MONITORED_STOCKS:
+from config.thresholds import (
+    MONITORED_STOCKS
+)
 
-        data = loader.fetch_stock_data(stock)
+loader = MarketDataLoader()
 
-        if not data.empty:
+indicator_engine = (
+    IndicatorEngine()
+)
 
-            loader.save_to_csv(
-                data,
-                stock
+for stock in MONITORED_STOCKS:
+
+    data = loader.fetch_stock_data(stock)
+
+    if not data.empty:
+
+        enriched_data = (
+            indicator_engine
+            .enrich_market_data(
+                data
             )
+        )
 
-            print("\n")
-            print(data.head())
-            print("\n")
-        
-if __name__ == "__main__":
-    main()
+        loader.save_to_csv(
+            enriched_data,
+            stock
+        )
+
+        print(
+            f"\nEnriched data for {stock}\n"
+        )
+
+        print(
+            enriched_data[
+                [
+                    "timestamp",
+                    "close",
+                    "ma_short",
+                    "ma_long",
+                    "price_change_percent",
+                    "volatility",
+                    "volume_ratio"
+                ]
+            ].tail()
+        )
