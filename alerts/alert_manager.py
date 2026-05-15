@@ -185,10 +185,12 @@ class AlertManager:
         alert_data
     ):
 
-        self.display_alert(
+        self.log_alert(
             alert_data
         )
-
-        self.log_alert(
+        
+        if(alert_data["confidence"] == "LOW"): return
+                
+        self.display_alert(
             alert_data
         )
