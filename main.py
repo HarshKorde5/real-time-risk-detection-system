@@ -1,3 +1,5 @@
+from rich.console import Console
+
 from ingestion.data_loader import (
     MarketDataLoader
 )
@@ -18,9 +20,15 @@ from alerts.alert_manager import (
     AlertManager
 )
 
+from utils.replay_engine import (
+    ReplayEngine
+)
+
 from config.thresholds import (
     MONITORED_STOCKS
 )
+
+console = Console()
 
 loader = MarketDataLoader()
 
@@ -40,7 +48,49 @@ alert_manager = (
     AlertManager()
 )
 
+replay_engine = (
+    ReplayEngine(
+        replay_speed=0.15
+    )
+)
+
+console.print(
+    "\n[bold green]"
+    "================================="
+)
+
+console.print(
+    "MARKET EVENT DETECTION SYSTEM"
+)
+
+console.print(
+    "================================="
+)
+
+console.print(
+    "[cyan]"
+    "Mode: Simulated Real-Time"
+)
+
+console.print(
+    "Monitoring Stocks:"
+)
+
 for stock in MONITORED_STOCKS:
+
+    console.print(
+        f"• {stock}"
+    )
+
+console.print("\n")
+
+for stock in MONITORED_STOCKS:
+
+    console.print(
+        f"\n[bold blue]"
+        f"Monitoring {stock}"
+        f"[/bold blue]"
+    )
 
     data = loader.fetch_stock_data(
         stock
@@ -56,8 +106,11 @@ for stock in MONITORED_STOCKS:
         )
     )
 
-    for _, row in (
-        enriched_data.iterrows()
+    for row in (
+        replay_engine
+        .stream_market_data(
+            enriched_data
+        )
     ):
 
         event = (
