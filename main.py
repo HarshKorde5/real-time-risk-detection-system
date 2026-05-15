@@ -1,11 +1,13 @@
-# main.py
-
 from ingestion.data_loader import (
     MarketDataLoader
 )
 
 from processing.indicators import (
     IndicatorEngine
+)
+
+from detection.event_detector import (
+    EventDetector
 )
 
 from config.thresholds import (
@@ -18,38 +20,63 @@ indicator_engine = (
     IndicatorEngine()
 )
 
+event_detector = (
+    EventDetector()
+)
+
 for stock in MONITORED_STOCKS:
 
-    data = loader.fetch_stock_data(stock)
+    print(
+        f"\nProcessing {stock}"
+    )
 
-    if not data.empty:
+    data = loader.fetch_stock_data(
+        stock
+    )
 
-        enriched_data = (
-            indicator_engine
-            .enrich_market_data(
-                data
+    if data.empty:
+        continue
+
+    enriched_data = (
+        indicator_engine
+        .enrich_market_data(
+            data
+        )
+    )
+
+    for _, row in (
+        enriched_data.iterrows()
+    ):
+
+        event = (
+            event_detector
+            .detect_market_events(
+                row,
+                stock
             )
         )
 
-        loader.save_to_csv(
-            enriched_data,
-            stock
-        )
+        if event:
 
-        print(
-            f"\nEnriched data for {stock}\n"
-        )
+            print(
+                "\nALERT DETECTED"
+            )
 
-        print(
-            enriched_data[
-                [
-                    "timestamp",
-                    "close",
-                    "ma_short",
-                    "ma_long",
-                    "price_change_percent",
-                    "volatility",
-                    "volume_ratio"
-                ]
-            ].tail()
-        )
+            print(
+                f"Stock: "
+                f"{event['stock']}"
+            )
+
+            print(
+                f"Time: "
+                f"{event['timestamp']}"
+            )
+
+            print(
+                f"Events: "
+                f"{event['events']}"
+            )
+
+            print(
+                "-" * 50
+            )
