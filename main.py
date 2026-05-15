@@ -10,6 +10,10 @@ from detection.event_detector import (
     EventDetector
 )
 
+from intelligence.confidence_engine import (
+    ConfidenceEngine
+)
+
 from config.thresholds import (
     MONITORED_STOCKS
 )
@@ -22,6 +26,10 @@ indicator_engine = (
 
 event_detector = (
     EventDetector()
+)
+
+confidence_engine = (
+    ConfidenceEngine()
 )
 
 for stock in MONITORED_STOCKS:
@@ -58,23 +66,45 @@ for stock in MONITORED_STOCKS:
 
         if event:
 
+            smart_alert = (
+                confidence_engine
+                .enrich_alert(
+                    event
+                )
+            )
+
             print(
-                "\nALERT DETECTED"
+                "\nMARKET ALERT"
             )
 
             print(
                 f"Stock: "
-                f"{event['stock']}"
+                f"{smart_alert['stock']}"
             )
 
             print(
                 f"Time: "
-                f"{event['timestamp']}"
+                f"{smart_alert['timestamp']}"
             )
 
             print(
                 f"Events: "
-                f"{event['events']}"
+                f"{smart_alert['events']}"
+            )
+
+            print(
+                f"Confidence: "
+                f"{smart_alert['confidence']}"
+            )
+
+            print(
+                f"Risk Level: "
+                f"{smart_alert['risk_level']}"
+            )
+
+            print(
+                f"Recommendation: "
+                f"{smart_alert['recommendation']}"
             )
 
             print(
