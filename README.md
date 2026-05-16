@@ -111,24 +111,7 @@ Built using rich for visually structured alert monitoring.
 
 ## System Architecture
 
-Yahoo Finance API
-        ↓
-Data Ingestion Layer
-        ↓
-Indicator Engine
-(MA, Volatility, Volume Analysis)
-        ↓
-Event Detection Engine
-(Threshold Logic)
-        ↓
-Confidence Engine
-(Multi-Factor Scoring)
-        ↓
-Alert Manager
-(Terminal + Logging)
-        ↓
-Visualization Layer
-(Charts & Analytics)
+![](data/img5.png)
 
 
 ### Technologies Used
@@ -142,7 +125,7 @@ Libraries : pandas, numpy, matplotlib, yfinance, rich
 
 1. Clone repository:
 ```
-git clone <repo-url>
+git clone https://github.com/HarshKorde5/real-time-risk-detection-system.git
 cd market-event-detection-system
 ```
 
